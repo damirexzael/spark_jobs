@@ -72,3 +72,26 @@ class TestParseJson(PySparkTest):
             self.read_json_file('input2_error'),
             self.read_json_file('schema')
         )
+
+    def test_extract_data(self):
+        schema = self.read_json_file('schema')
+
+        data = self.read_json_file('input1')
+        self.assertEqual(
+            utils.extract_from_schema(data, schema),
+            [
+                {'key': 'price', 'value': 34.99, 'required': True},
+                {'key': 'name', 'value': 'Eggs', 'required': False},
+                {'key': 'url', 'value': 'http://www.google.cl', 'required': False}
+            ]
+        )
+
+        data = self.read_json_file('input2')
+        self.assertEqual(
+            utils.extract_from_schema(data, schema),
+            [
+                {'key': 'price', 'value': 27.0, 'required': True},
+                {'key': 'name', 'value': None, 'required': False},
+                {'key': 'url', 'value': None, 'required': False}
+            ]
+        )

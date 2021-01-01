@@ -36,3 +36,37 @@ def check_schema(schema):
 
 def check_data(data, schema):
     validate(instance=data, schema=schema)
+
+
+def extract_from_schema(data, schema):
+    values = list()
+    required = schema.get('required', [])
+    for key, value in schema["properties"].items():
+        data_output = data[key] if key in required else data.get(key, None)
+        if data_output:
+            data_output = _cast_value(data_output, value, schema)
+        values.append({
+            "key": key,
+            "value": data_output,
+            "required": key in required
+        })
+    return values
+
+
+def _cast_value(data_output, value, schema):
+    if value.get('$ref', False):
+        value = _get_reference(value.get('$ref'), schema)
+
+    if value.get('type') == 'number':
+        parser = float
+    elif value.get('type') == 'string':
+        parser = str
+    else:
+        raise TypeError(f"Not find {value} json type")
+    return parser(data_output)
+
+
+def _get_reference(reference, schema):
+    for key in reference.split('/')[1:]:
+        schema = schema[key]
+    return schema
