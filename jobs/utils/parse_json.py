@@ -1,5 +1,7 @@
 import json
 
+from jsonschema import Draft6Validator, validate
+
 
 def _extract_value(x, column_name, json_schema):
     json_data = json.loads(x[column_name])
@@ -26,3 +28,11 @@ def json_extract(df, column_name, json_schema, overwrite=False):
         .map(lambda x: (tuple() if overwrite else x) + _extract_value(x, column_name, json_schema)) \
         .toDF(columns)
     return extraction
+
+
+def check_schema(schema):
+    return Draft6Validator.check_schema(schema)
+
+
+def check_data(data, schema):
+    validate(instance=data, schema=schema)

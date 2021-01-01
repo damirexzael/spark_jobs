@@ -1,6 +1,6 @@
 import json
 
-from jsonschema import validate, Draft6Validator, ValidationError
+from jsonschema import validate, ValidationError
 
 from jobs import utils
 from tests.pyspark_base import PySparkTest
@@ -46,21 +46,21 @@ class TestParseJson(PySparkTest):
 
         self.assertEqual(self.df_to_dict(test), self.expected_result_overwrite)
 
+    @staticmethod
+    def read_json_file(name):
+        with open(f'tests/resources/utils/parse_json/{name}.json', 'r') as schema_file:
+            return json.loads(schema_file.read())
+
     def test_check_schema(self):
-        with open('tests/resources/utils/parse_json/schema.json', 'r') as schema_file:
-            schema = json.loads(schema_file.read())
-        self.assertIsNone(Draft6Validator.check_schema(schema))
+        self.assertIsNone(utils.check_schema(self.read_json_file('schema')))
 
     def test_input_data(self):
-        with open('tests/resources/utils/parse_json/schema.json', 'r') as schema_file:
-            schema = json.loads(schema_file.read())
-
-        with open('tests/resources/utils/parse_json/input1.json', 'r') as input_file:
-            self.assertIsNone(validate(instance=json.loads(input_file.read()), schema=schema))
+        self.assertIsNone(utils.check_data(self.read_json_file('input1'), self.read_json_file('schema')))
 
     def test_input_data_error(self):
-        with open('tests/resources/utils/parse_json/schema.json', 'r') as schema_file:
-            schema = json.loads(schema_file.read())
-
-        with open('tests/resources/utils/parse_json/input2.json', 'r') as input_file:
-            self.assertRaises(ValidationError, validate, instance=json.loads(input_file.read()), schema=schema)
+        self.assertRaises(
+            ValidationError,
+            utils.check_data,
+            self.read_json_file('input1_error'),
+            self.read_json_file('schema')
+        )
