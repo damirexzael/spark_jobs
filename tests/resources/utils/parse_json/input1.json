@@ -1,4 +1,6 @@
 {
   "name": "Eggs",
-  "price": 34.99
+  "price": 34.99,
+  "url": "http://www.google.cl",
+  "not_defined": "not_defined"
 }

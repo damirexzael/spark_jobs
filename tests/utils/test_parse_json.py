@@ -56,11 +56,19 @@ class TestParseJson(PySparkTest):
 
     def test_input_data(self):
         self.assertIsNone(utils.check_data(self.read_json_file('input1'), self.read_json_file('schema')))
+        self.assertIsNone(utils.check_data(self.read_json_file('input2'), self.read_json_file('schema')))
 
     def test_input_data_error(self):
         self.assertRaises(
             ValidationError,
             utils.check_data,
             self.read_json_file('input1_error'),
+            self.read_json_file('schema')
+        )
+
+        self.assertRaises(
+            ValidationError,
+            utils.check_data,
+            self.read_json_file('input2_error'),
             self.read_json_file('schema')
         )

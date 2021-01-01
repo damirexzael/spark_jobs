@@ -1,4 +1,11 @@
 {
+  "title": "input.json",
+  "definitions": {
+    "url": {
+      "type": "string",
+      "pattern": "^https?://(www\\.)?[a-z0-9.-]*\\.[a-z]{2,}([^>%\\x20\\x00-\\x1f\\x7F]|%[0-9a-fA-F]{2})*$"
+    }
+  },
   "type": "object",
   "properties": {
     "price": {
@@ -6,6 +13,12 @@
     },
     "name": {
       "type": "string"
+    },
+    "url": {
+      "$ref": "#/definitions/url"
     }
-  }
+  },
+  "required": [
+    "price"
+  ]
 }
