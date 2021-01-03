@@ -24,19 +24,18 @@ def extract_from_schema(data, schema):
         required = name in schema.get("required", [])
         result.append({
             "key": name,
-            "value": data[name] if required else data.get(name, None),  # add types number, string, integer
+            "value": _cast_value(data[name] if required else data.get(name, None), data_value["type"]),
             "required": required
         })
     return result
 
 
-def _cast_value(data_output, value, schema):
-    if value.get('$ref', False):
-        value = _get_reference(value.get('$ref'), schema)
-
-    if value.get('type') == 'number':
+def _cast_value(data_output, value):
+    if data_output is None:
+        return None
+    if value == 'number':
         parser = float
-    elif value.get('type') == 'string':
+    elif value == 'string':
         parser = str
     else:
         raise TypeError(f"Not find {value} json type")
