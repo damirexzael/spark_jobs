@@ -18,33 +18,13 @@ class TestParseJson(PySparkTest):
                     '21:04:12","decisionID":"ctc-vn-2d1012a5-3c8f-469b-a2c4-37006014e098","notificationID":"ctc-vn-c0df0d8a-8543-4f33-b521-b8384055e2bd","alertDetails":[{"triggeringAppID":"85fbfc2e-6fa1-4c79-85db-772a5486a335","ruleCategory":"PCT_TRANSACTION","ruleType":"TCT_AUTO_PAY","alertReason":"DECLINE_BY_ISSUER","userIdentifier":"cd1706ff-1706-4c54-bd06-6bbe61f4405f","controlTargetType":"CARD_LEVEL"}]},"transactionTypes":["TCT_AUTO_PAY"],"sponsorId":"DPS_67959088580","appId":"85fbfc2e-6fa1-4c79-85db-772a5486a335"},"prepaidCard":{"state":"active","holderNumber":2,"_id":"5d1a8c67c27ab0003f7c9f14","machId":"cd1706ff-1706-4c54-bd06-6bbe61f4405f","createdAt":"2019-07-01T22:42:47.308Z","updatedAt":"2019-07-01T22:42:49.026Z","__v":0,"clientNumber":"00613180","contract":"00160001000000613181","holderName":"LEONARDO '
                     'ARTURO MORA '
                     'GAJARDO","expirationMonth":"07","expirationYear":"2027","last4Pan":"9718","id":"5d1a8c67c27ab0003f7c9f14"},"msg":"third_parties_visa_notification_delivery_callback_webhook","time":"2020-02-17T21:04:13.277Z","v":0}',
+            'last4Pan': '9718',
             'month': '07',
-            'name': '30',
+            'name': 'third-parties-api',
             'year': '2020'
         }]
 
-        self.expected_result_overwrite = [{'name': '30'}]
-
-    def test_json_extract_not_overwrite(self):
-        logs = self.spark.read.csv('tests/resources/utils/Logs.csv', quote="'", header=True)
-        json_schema = {
-            'name': ['level']
-        }
-        column_name = 'json'
-
-        test = utils.json_extract(logs, column_name, json_schema)
-
-        self.assertEqual(self.df_to_dict(test), self.expected_result_not_overwrite)
-
-    def test_json_extract_overwrite(self):
-        logs = self.spark.read.csv('tests/resources/utils/Logs.csv', quote="'", header=True)
-        json_schema = {
-            'name': ['level']
-        }
-        column_name = 'json'
-        test = utils.json_extract(logs, column_name, json_schema, overwrite=True)
-
-        self.assertEqual(self.df_to_dict(test), self.expected_result_overwrite)
+        self.expected_result_overwrite = [{'last4Pan': '9718', 'name': 'third-parties-api'}]
 
     @staticmethod
     def read_json_file(name):
@@ -95,3 +75,51 @@ class TestParseJson(PySparkTest):
                 {'key': 'url', 'value': None, 'required': False}
             ]
         )
+
+        data = self.read_json_file('input_test')
+        schema = self.read_json_file('schema_test')
+        self.assertEqual(
+            utils.extract_from_schema(data, schema),
+            [
+                {'key': 'name', 'value': 'third-parties-api', 'required': True},
+                {'key': 'last4Pan', 'value': '9718', 'required': True}
+            ]
+        )
+
+    def test_json_extract_with_schema_overwrite(self):
+        df = self.spark.read.csv('tests/resources/utils/Logs.csv', quote="'", header=True)
+        column_name = 'json'
+
+        schema = self.read_json_file('schema_test')
+        test = utils.json_extract_with_schema(df, column_name, schema, True)
+
+        self.assertEqual(self.df_to_dict(test), self.expected_result_overwrite)
+
+        schema = self.read_json_file('schema_test1')
+        test = utils.json_extract_with_schema(df, column_name, schema, True)
+
+        self.assertEqual(self.df_to_dict(test), self.expected_result_overwrite)
+
+    def test_json_extract_with_schema_not_overwrite(self):
+        df = self.spark.read.csv('tests/resources/utils/Logs.csv', quote="'", header=True)
+        column_name = 'json'
+
+        schema = self.read_json_file('schema_test')
+        test = utils.json_extract_with_schema(df, column_name, schema, False)
+
+        self.assertEqual(self.df_to_dict(test), self.expected_result_not_overwrite)
+
+        schema = self.read_json_file('schema_test1')
+        test = utils.json_extract_with_schema(df, column_name, schema, False)
+
+        self.assertEqual(self.df_to_dict(test), self.expected_result_not_overwrite)
+
+    def test_check_schema_test(self):
+        self.assertIsNone(utils.check_schema(self.read_json_file('schema_test')))
+
+        self.assertIsNone(utils.check_schema(self.read_json_file('schema_test1')))
+
+    def test_input_data_test(self):
+        self.assertIsNone(utils.check_data(self.read_json_file('input_test'), self.read_json_file('schema_test')))
+
+        self.assertIsNone(utils.check_data(self.read_json_file('input_test'), self.read_json_file('schema_test1')))

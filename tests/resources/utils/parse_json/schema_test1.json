@@ -1,0 +1,28 @@
+{
+  "title": "input.json",
+  "type": "object",
+  "definitions": {
+    "prepaidCard": {
+      "type": "object",
+      "properties": {
+        "last4Pan": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "last4Pan"
+      ]
+    }
+  },
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "prepaidCard": {
+      "$ref": "#/definitions/prepaidCard"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "title": "input.json",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "prepaidCard": {
+      "type": "object",
+      "properties": {
+        "last4Pan": {
+          "type": "string"
+        }
+      },
+      "required": ["last4Pan"]
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
