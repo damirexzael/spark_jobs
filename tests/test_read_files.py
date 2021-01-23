@@ -14,6 +14,4 @@ class TestReadFiles(PySparkTest):
         self.assertEqual(parquet_file.show(), self.tables['Users'].show())
 
     def tearDown(self) -> None:
-        super().setUp()
-
         shutil.rmtree(self.args['s3_path'])

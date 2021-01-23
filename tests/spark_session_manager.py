@@ -33,4 +33,12 @@ class SparkSessionManager:
 
 
 if __name__ == '__main__':
-    SparkSessionManager.stop()
+    import sys
+    if sys.argv[1] == 'start':
+        print('starting Spark session')
+        SparkSessionManager.start()
+    elif sys.argv[1] == 'stop':
+        print('stopping  Spark session')
+        SparkSessionManager.stop()
+    else:
+        raise ValueError("Arg not start or end, call this file as 'python spark_session_manager.py start'")
