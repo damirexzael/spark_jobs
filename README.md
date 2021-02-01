@@ -2,6 +2,9 @@
 - Python >=3.6
 - Java OpenJDK ==1.8.0
 
+# PyCharm Configuration
+Add jobs/python_libs as sources in Preferences/Project Structure
+
 # Install
 1. Create environ
     ```

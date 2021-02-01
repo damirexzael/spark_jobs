@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 from tests.pyspark_base import PySparkTest
 
-from jobs import utils
+from jobs.python_libs import utils
 
 
 class TestUtils(PySparkTest):

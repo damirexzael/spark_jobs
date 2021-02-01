@@ -2,7 +2,7 @@ import json
 
 from jsonschema import ValidationError
 
-from jobs import utils
+from jobs.python_libs import utils
 from tests.pyspark_base import PySparkTest
 
 

@@ -27,7 +27,7 @@ class PySparkTest(unittest.TestCase):
             's3_path': '/tmp/read_files'
         }
         base_jobs.get_values.return_value = [self.args, self.spark, glue_context]
-        sys.modules['jobs.base_jobs'] = base_jobs
+        sys.modules['base_jobs'] = base_jobs
 
         self.add_temporal_tables()
 
